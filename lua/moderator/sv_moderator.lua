@@ -70,7 +70,6 @@ hook.Add("PlayerSay", "mod_PlayerSay", function(client, text)
         end
 
         local command = text:match("([_%w가-힝]+)")
-        print(command)
 
         local commandLen
         if (utf8) then
@@ -88,7 +87,6 @@ hook.Add("PlayerSay", "mod_PlayerSay", function(client, text)
             else
                 arguments = text:sub(commandLen + 1)
             end
-            print(command)
 
             local result, message = moderator.ParseCommand(client, command, arguments)
 
