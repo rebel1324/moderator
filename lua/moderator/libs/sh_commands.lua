@@ -15,22 +15,59 @@ if (SERVER) then
         local inString = false
         local escaping = 0
         local inArray = false
+        local length
 
-        for i = 1, #text do
-            local char = text:sub(i, i)
+        if (utf8) then
+            length = string.utf8len(text)
+        else
+            length = #text
+        end
+
+        for i = 1, length do
+            local char
+            if (utf8) then
+                char = string.utf8sub(text, i, i)
+            else
+                char = text:sub(i, i)
+            end
+
             if (escaping > i) then continue end
 
             if (char == "\\") then
                 escaping = i + 1
             elseif (not noArrays and not inString and char == "[") then
-                local match = text:sub(i):match("%b[]")
+                local match
+                if (utf8) then
+                    match = string.utf8sub(text, i)
+                else
+                    match = text:sub(i)
+                end
+                local match = match:match("%b[]")
 
                 if (match) then
-                    local exploded = moderator.GetArguments(match:sub(2, -2), nil, ",")
+                    local arg
+                    if (utf8) then
+                        arg = string.utf8sub(text, 2, -2)
+                    else
+                        arg = text:sub(2, -2)
+                    end
+
+                    local exploded = moderator.GetArguments(arg, nil, ",")
+
+                    local prefix
+                    if (utf8) then
+                        prefix = string.utf8sub(text, 1, 1)
+                    else
+                        prefix = text:sub(1, 1)
+                    end
 
                     for k, v in pairs(exploded) do
-                        if (type(v) == "string" and (v:sub(1, 1) == " " or v:sub(1, 1) == delimiter)) then
-                            exploded[k] = v:sub(2)
+                        if (type(v) == "string" and (prefix == " " or prefix == delimiter)) then
+                            if (utf8) then
+                                exploded[k] = string.utf8sub(v, 2)
+                            else
+                                exploded[k] = v:sub(2)
+                            end
                         end
                     end
 
@@ -103,8 +140,18 @@ if (SERVER) then
     targets["last"] = function(client) return client.modLastTarget end
 
     local function GetTargeter(client, info)
-        if (info and info:sub(1, 1) == targetPrefix) then
-            local targeter = info:lower():sub(2):match("([_%w]+)")
+        local prefix
+        local targetSub 
+        if (utf8) then
+            prefix = string.utf8sub(info, 1, 1)
+            targetSub = string.utf8sub(info:lower(), 2)
+        else
+            prefix = info:sub(1, 1)
+            targetSub = info:lower():sub(2)
+        end
+
+        if (info and prefix == targetPrefix) then
+            local targeter = targetSub:match("([_%w]+)")
             local result = targets[targeter]
 
             if (result) then

@@ -43,26 +43,53 @@ end
 
 hook.Add("PlayerSay", "mod_PlayerSay", function(client, text)
     if (text:sub(1, 1) == "!") then
-        text = text:sub(2)
+        if (utf8) then
+            text = string.utf8sub(text, 2)
+        else
+            text = text:sub(2)
+        end
 
-        if (text:sub(1, 4):lower() == "menu") then
+        local ffs
+        if (utf8) then
+            ffs = string.utf8sub(text, 1, 4)
+        else
+            ffs = text:sub(1, 4)
+        end
+        
+        if (ffs:lower() == "menu") then
             client:ConCommand("mod_menu")
 
             return ""
         end
 
-        if (text:sub(1, 4):lower() == "help") then
+        if (ffs:lower() == "help") then
             client:ChatPrint("[moderator] Help has been printed in your console.")
             client:ConCommand("mod help")
 
             return ""
         end
 
-        local command = text:match("([_%w]+)")
+        local command = text:match("([_%w가-힝]+)")
+        print(command)
+
+        local commandLen
+        if (utf8) then
+            commandLen = string.utf8len(command)
+        else
+            commandLen = #command
+        end
 
         if (command) then
             command = command:lower()
-            local arguments = text:sub(#command + 1)
+            
+            local arguments
+            if (utf8) then
+                arguments = string.utf8sub(text, commandLen + 1)
+            else
+                arguments = text:sub(commandLen + 1)
+            end
+            print(command)
+
             local result, message = moderator.ParseCommand(client, command, arguments)
 
             if (message) then
