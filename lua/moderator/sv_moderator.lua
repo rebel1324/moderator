@@ -13,6 +13,7 @@ util.AddNetworkString("mod_NotifyAction")
 util.AddNetworkString("mod_Notify")
 util.AddNetworkString("mod_AdminMessage")
 util.AddNetworkString("mod_AllMessage")
+util.AddNetworkString("mod_SyncBans")
 
 function moderator.NotifyAction(client, target, action)
     local hasNoTarget = target == nil
@@ -71,14 +72,15 @@ hook.Add("PlayerSay", "mod_PlayerSay", function(client, text)
 
         local command = text:match("([_%w가-힝]+)")
 
-        local commandLen
-        if (utf8) then
-            commandLen = string.utf8len(command)
-        else
-            commandLen = #command
-        end
 
         if (command) then
+            local commandLen
+            if (utf8) then
+                commandLen = string.utf8len(command)
+            else
+                commandLen = #command
+            end
+            
             command = command:lower()
             
             local arguments
