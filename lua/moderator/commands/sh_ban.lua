@@ -14,12 +14,27 @@ COMMAND.usage = "<time length> [string reason]"
 COMMAND.example = "!ban Troll 1w \"being a troll, banned for a week\" - Bans a troll for one week."
 
 function COMMAND:OnRun(client, arguments, target)
+    local isPlayer = false
+    print(string.match(arguments[1], "STEAM_[0-5]:[0-9]:[0-9]+"))
     if isstring(arguments[1]) then
         target = moderator.FindPlayerByName(arguments[1], false, 1)
+        
+        if (IsValid(target)) then
+            isPlayer = true
+        else
+            target = arguments[1]:match("STEAM_[0-5]:[0-9]:[0-9]+")
+            isPlayer = false
+        end
     end
 
-    if not target or not target:IsValid() or target:IsBot() then
-        return false, "you need to provide a valid player or steamID."
+    if (isPlayer) then
+        if (not IsValid(target) or target:IsBot()) then
+            return false, moderator:L(client, "notValidPlayerID")
+        end
+    else
+        if (not target) then
+            return false, moderator:L(client, "notValidPlayerID")
+        end
     end
 
     local time = moderator.GetTimeByString(arguments[2] or 60)
@@ -31,7 +46,7 @@ function COMMAND:OnRun(client, arguments, target)
 end
 
 if (CLIENT) then
-    local timeDefinitions = {{"1 Hour", "1h"}, {"1 Day", "1d"}, {"1 Week", "1w"}, {"1 Month", "1mo"}, {"1 Year", "1y"}, {"Permanently", "0"}}
+    local timeDefinitions = {{"1 시간", "1h"}, {"1 일", "1d"}, {"1 주", "1w"}, {"1 달", "1mo"}, {"1 년", "1y"}, {"영원히 꺼져", "0"}}
     local reasons = {"Harrassment", "Breaking a rule", "Spamming"}
     local history = util.JSONToTable(cookie.GetString("mod_BanReasons", "")) or {}
 
