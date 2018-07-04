@@ -107,6 +107,8 @@ LANG.english = {
     reportReceived = "%s has reported %s.",
     reportTooShort = "The report should contain at least 5 characters.",
     reportWait = "You must wait %s second(s) to send another report.",
+
+    notValidPlayerID = "you need to provide a valid player or steamID.",
 }
 
 LANG.korean = {
@@ -143,4 +145,6 @@ LANG.korean = {
     reportReceived = "%s 님이 신고를 접수했습니다: %s.",
     reportTooShort = "신고하시려면 적어도 %s자는 적어야 합니다.",
     reportWait = "다음 신고까지 %s초 기다려주시기 바랍니다.",
+
+    notValidPlayerID = "올바른 플레이어 또는 스팀 ID를 적어야합니다.",
 }
